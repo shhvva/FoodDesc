@@ -1,115 +1,50 @@
-const API_KEY = "eaf5a5e9188f4ae9bd204d7653597073";
-const url = "https://api.spoonacular.com/recipes/complexSearch?query=";
+const api_key = "1b86628b4c59044fed8475f52415ebbc";
+const api_id = "69ad9c27";
+const url = "https://api.edamam.com/api/recipes/v2?type=public&q=";
 
+window.addEventListener("load", () => fetchRecipie("chicken"));
 
-window.addEventListener("load", () => fetchNews("pasta"));
+async function fetchRecipie(query) {
+  const res = await fetch(`${url}${query}&app_id=${api_id}&app_key=${api_key}`);
+  const data = await res.json();
 
-function reload() {
-    window.location.reload();
-}
-
-async function fetchNews(query) {
-    const res = await fetch(`${url}${query}`);
-    const data = await res.json();
-    bindData(data.results);
-}
-
-function bindData(articles) {
+  // Check if data.hits is an array and has at least one element
+  if (Array.isArray(data.hits) && data.hits.length > 0) {
     const cardContainer = document.getElementById("card-container");
     const recipeCardTemplate = document.getElementById("template-recipe-card");
-
     cardContainer.innerHTML = "";
 
-    articles.forEach((article) => {
-        if (!article.urlToImage) return;
-        const cardClone = recipeCardTemplate.content.cloneNode(true);
-        fillDataInCard(cardClone, article);
-        cardContainer.appendChild(cardClone);
-    });
+    // Loop through the first 6 recipes and create a card for each
+    for (let index = 0; index < 6 && index < data.hits.length; index++) {
+      const ingredients = data.hits[index].recipe.ingredientLines;
+      const img = data.hits[index].recipe.image;
+      const lab = data.hits[index].recipe.label;
+      const ur = data.hits[index].recipe.url;
+      const cal = parseInt(data.hits[index].recipe.calories);
+
+      // Create a new card for each recipe
+      const cardClone = recipeCardTemplate.content.cloneNode(true);
+      fillDataFromServer(cardClone, ingredients.join("\n"), img, lab, ur, cal);
+      cardContainer.appendChild(cardClone);
+    }
+  } else {
+    console.error("No recipes found.");
+  }
 }
 
-function fillDataInCard(cardClone, article) {
-    const newsImg = cardClone.querySelector("#card-img");
-    // const newsTitle = cardClone.querySelector("#news-title");
-    // const newsSource = cardClone.querySelector("#news-source");
-    // const newsDesc = cardClone.querySelector("#news-desc");
+function fillDataFromServer(cardClone, ingredientText, img, lab, ur, cal) {
+  const recpimg = cardClone.querySelector("#card-img");
+  const recptitle = cardClone.querySelector("#card-title");
+  const recpingdr = cardClone.querySelector("#card-ingdr");
+  const recpsrc = cardClone.querySelector("#recp-source");
+  const recpcal = cardClone.querySelector("#card-cal");
+  recpimg.src = img;
 
-    newsImg.src = results.image;
+  recptitle.innerHTML = lab;
 
-    // newsTitle.innerHTML = article.title;
-    // newsDesc.innerHTML = article.description;
+  recpingdr.innerHTML = ingredientText;
 
-    // const date = new Date(article.publishedAt).toLocaleString("en-US", {
-    //     timeZone: "Asia/Jakarta",
-    // });
+  recpcal.innerHTML = cal;
 
-    // newsSource.innerHTML = `${article.source.name} · ${date}`;
-
-    cardClone.firstElementChild.addEventListener("click", () => {
-        window.open(article.url, "_blank");
-    });
+  recpsrc.setAttribute("href", ur);
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// const api_key = "1b86628b4c59044fed8475f52415ebbc";
-// const api_id = "69ad9c27";
-// const url = "https://api.edamam.com/api/recipes/v2?type=public&q="
-
-// window.addEventListener('load',() => fetchRecipie("chicken"));
-
-// async function fetchRecipie(query){
-//     const res = await fetch(`${url}${query}&app_id=${api_id}&app_key=${api_key}`);
-//     const data = await res.json();
-//     console.log(data.hits.recipe.ingredient);
-//     bindData(data.hits.recipe.ingredient);
-// }
-
-// function bindData(hits){
-
-//     const cardContainer = document.getElementById('card-container');
-//     const recipeCardTemplate = document.getElementById('template-recipe-card');
-//     cardContainer.innerHTML = '';
-
-//     for (let i = 0; i < 6; i++) {
-
-//         const cardClone = recipeCardTemplate.content.cloneNode(true);
-//         fillDataFromServer(cardClone,hits,i);
-//         cardContainer.appendChild(cardClone);
-//     }
-
-// }
-
-// function fillDataFromServer(cardClone,hits,i){
-//         const recpimg = cardClone.querySelector('#card-img');    
-//         const recptitle = cardClone.querySelector('#card-title');
-//         const recpcal = cardClone.querySelector('#card-cal');
-//         const recpeunit = cardClone.querySelector('#card-unit');
-        
-//         // recpimg.src = hits[0].recipe.images.SMALL.url;
-//         // recptitle.innerHTML = JSON.stringify(hits[i].label);
-//         recpcal.innerHTML = hits[1].ingredient[0];
-        
-// }
