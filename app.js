@@ -1,5 +1,5 @@
-const api_key = "1b86628b4c59044fed8475f52415ebbc";
-const api_id = "69ad9c27";
+const api_key = "API_KEY";
+const api_id = "API_ID";
 const url = "https://api.edamam.com/api/recipes/v2?type=public&q=";
 
 window.addEventListener("load", () => fetchRecipie("chicken"));
